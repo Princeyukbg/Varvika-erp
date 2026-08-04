@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1565c0">
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>VARVIKA CREATION ERP</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+<body>
+
+<!-- LOGIN PAGE -->
+
+<div id="loginPage">
+
+<div class="login-box">
+
+<h1>VARVIKA CREATION</h1>
+
+<h3>ERP Management System</h3>
+
+<select id="loginType">
+
+<option value="owner">Owner Login</option>
+
+<option value="worker">Worker Login</option>
+
+</select>
+
+<input
+type="text"
+id="loginUser"
+placeholder="Username / Worker ID">
+
+<input
+type="password"
+id="loginPassword"
+placeholder="Password">
+
+<button onclick="login()">
+
+Login
+
+</button>
+
+</div>
+
+</div>
+<button id="menuBtn" onclick="toggleMenu()">
+☰
+</button>
+<!-- ERP -->
+
+<div id="erpPage" style="display:none;">
+
+<!-- Sidebar -->
+
+<div class="sidebar">
+
+<h2>VARVIKA ERP</h2>
+
+<button onclick="showSection('dashboardSection')">
+🏠 Dashboard
+</button>
+
+<button onclick="showSection('workerSection')">
+👷 Workers
+</button>
+
+<button onclick="showSection('attendanceSection')">
+📅 Attendance
+</button>
+
+<button onclick="showSection('salarySection')">
+💰 Salary
+</button>
+
+<button onclick="showSection('customerSection')">
+👤 Customers
+</button>
+
+<button onclick="showSection('orderSection')">
+📦 Orders
+</button>
+
+<button onclick="showSection('productionSection')">
+🏭 Production
+</button>
+
+<button onclick="showSection('inventorySection')">
+📋 Inventory
+</button>
+
+<button onclick="showSection('reportSection')">
+📊 Reports
+</button>
+
+<button onclick="showSection('invoiceSection')">
+🧾 Invoice
+</button>
+
+<button onclick="showSection('settingsSection')">
+⚙ Settings
+</button>
+
+</div>
+
+<!-- MAIN -->
+
+<div class="main">
+
+<!-- Dashboard -->
+
+<div
+id="dashboardSection"
+class="section">
+
+<h1>Dashboard</h1>
+
+<div class="cards">
+
+<div class="card">
+
+<h3>Total Workers</h3>
+
+<p id="workersCount">0</p>
+
+</div>
+
+<div class="card">
+
+<h3>Total Customers</h3>
+
+<p id="customersCount">0</p>
+
+</div>
+
+<div class="card">
+
+<h3>Total Orders</h3>
+
+<p id="ordersCount">0</p>
+
+</div>
+
+<div class="card">
+
+<h3>Total Production</h3>
+
+<p id="productionCount">0</p>
+
+</div>
+
+<div class="card">
+
+<h3>Total Inventory</h3>
+
+<p id="inventoryCount">0</p>
+
+</div>
+
+<div class="card">
+
+<canvas id="salesChart"></canvas>
+
+</div>
+
+</div>
+
+</div>
+<!-- ==========================
+WORKER SECTION
+========================== -->
+
+<div id="workerSection" class="section" style="display:none;">
+
+<h1>👷 Worker Management</h1>
+
+<div class="card">
+
+<input id="workerId" type="text" placeholder="Worker ID">
+
+<input id="workerName" type="text" placeholder="Worker Name">
+
+<input id="workerPassword" type="password" placeholder="Password">
+
+<input id="workerSalary" type="number" placeholder="Salary">
+
+<select id="salaryType">
+<option value="Monthly">Monthly</option>
+<option value="Daily">Daily</option>
+</select>
+
+<button onclick="addWorker()">Add Worker</button>
+
+<input
+id="searchWorker"
+type="text"
+placeholder="Search Worker..."
+onkeyup="searchWorker()">
+
+</div>
+
+<div class="card">
+
+<h2>Worker List</h2>
+
+<div id="workerList"></div>
+
+</div>
+
+</div>
+
+<!-- ==========================
+ATTENDANCE SECTION
+========================== -->
+
+<div id="attendanceSection" class="section" style="display:none;">
+
+<h1>📅 Attendance</h1>
+
+<div class="card">
+
+<select id="attendanceWorker"></select>
+
+<input id="attendanceDate" type="date">
+
+<select id="attendanceStatus">
+<option value="Present">Present</option>
+<option value="Absent">Absent</option>
+<option value="Half Day">Half Day</option>
+</select>
+
+<button onclick="markAttendance()">
+Save Attendance
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>Attendance List</h2>
+
+<div id="attendanceList"></div>
+
+</div>
+
+</div>
+
+<!-- ==========================
+SALARY SECTION
+========================== -->
+
+<div id="salarySection" class="section" style="display:none;">
+
+<h1>💰 Salary Management</h1>
+
+<div class="card">
+
+<select id="salaryWorker"></select>
+
+<input id="salaryMonth" type="month">
+
+<button onclick="calculateSalary()">
+
+Calculate Salary
+
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>Salary Result</h2>
+
+<div id="salaryResult"></div>
+
+</div>
+
+</div>
+<!-- ==========================
+CUSTOMER SECTION
+========================== -->
+
+<div id="customerSection" class="section" style="display:none;">
+
+<h1>👤 Customer Management</h1>
+
+<div class="card">
+
+<input
+id="customerName"
+type="text"
+placeholder="Customer Name">
+
+<input
+id="customerMobile"
+type="text"
+placeholder="Mobile Number">
+
+<input
+id="customerAddress"
+type="text"
+placeholder="Address">
+
+<button onclick="addCustomer()">
+
+Add Customer
+
+</button>
+
+<input
+id="searchCustomer"
+type="text"
+placeholder="Search Customer..."
+onkeyup="searchCustomer()">
+
+</div>
+
+<div class="card">
+
+<h2>Customer List</h2>
+
+<div id="customerList"></div>
+
+</div>
+
+</div>
+
+
+
+<!-- ==========================
+ORDER SECTION
+========================== -->
+
+<div id="orderSection" class="section" style="display:none;">
+
+<h1>📦 Order Management</h1>
+
+<div class="card">
+
+<input
+id="orderNo"
+type="text"
+placeholder="Order Number">
+
+<select id="orderCustomer">
+
+<option value="">Select Customer</option>
+
+</select>
+
+<input
+id="orderDesign"
+type="text"
+placeholder="Design Name">
+
+<input
+id="orderQty"
+type="number"
+placeholder="Quantity">
+
+<input
+id="orderRate"
+type="number"
+placeholder="Rate">
+
+<select id="orderStatus">
+
+<option value="Pending">Pending</option>
+
+<option value="Running">Running</option>
+
+<option value="Completed">Completed</option>
+
+</select>
+
+<button onclick="addOrder()">
+
+Create Order
+
+</button>
+
+<input
+id="searchOrder"
+type="text"
+placeholder="Search Order..."
+onkeyup="searchOrder()">
+
+</div>
+
+<div class="card">
+
+<h2>Order List</h2>
+
+<div id="orderList"></div>
+
+</div>
+
+</div>
+<!-- ==========================
+PRODUCTION SECTION
+========================== -->
+
+<div id="productionSection" class="section" style="display:none;">
+
+<h1>🏭 Production Management</h1>
+
+<div class="card">
+
+<select id="productionOrder">
+<option value="">Select Order</option>
+</select>
+
+<select id="productionWorker">
+<option value="">Select Worker</option>
+</select>
+
+<input
+id="machineNo"
+type="text"
+placeholder="Machine No">
+
+<input
+id="productionDesign"
+type="text"
+placeholder="Design">
+
+<input
+id="productionQty"
+type="number"
+placeholder="Production Qty">
+
+<input
+id="productionDate"
+type="date">
+
+<select id="productionStatus">
+
+<option value="Running">
+Running
+</option>
+
+<option value="Completed">
+Completed
+</option>
+
+</select>
+
+<button onclick="addProduction()">
+
+Save Production
+
+</button>
+
+<input
+id="searchProduction"
+type="text"
+placeholder="Search Production"
+onkeyup="searchProduction()">
+
+</div>
+
+<div class="card">
+
+<h2>Production List</h2>
+
+<div id="productionList"></div>
+
+</div>
+
+<div class="card">
+
+<h2>Machine Report</h2>
+
+<div id="machineReport"></div>
+
+</div>
+
+</div>
+
+<!-- ==========================
+INVENTORY SECTION
+========================== -->
+
+<div id="inventorySection"
+class="section"
+style="display:none;">
+
+<h1>📦 Inventory Management</h1>
+
+<div class="card">
+
+<input
+id="itemName"
+type="text"
+placeholder="Item Name">
+
+<select id="itemUnit">
+
+<option value="Meter">Meter</option>
+
+<option value="Kg">Kg</option>
+
+<option value="Piece">Piece</option>
+
+</select>
+
+<input
+id="itemQty"
+type="number"
+placeholder="Quantity">
+
+<input
+id="itemPrice"
+type="number"
+placeholder="Price">
+
+<button onclick="addItem()">
+
+Add Item
+
+</button>
+
+<input
+id="searchItem"
+type="text"
+placeholder="Search Item"
+onkeyup="searchItem()">
+
+</div>
+
+<div class="card">
+
+<h2>Inventory List</h2>
+
+<div id="inventoryList"></div>
+
+</div>
+
+<div class="card">
+
+<h2>Inventory Report</h2>
+
+<div id="inventoryReport"></div>
+
+</div>
+
+<div class="card">
+
+<h2>Total Stock Value</h2>
+
+<p id="stockValue">₹0</p>
+
+</div>
+
+</div>
+<!-- ==========================
+REPORT SECTION
+========================== -->
+
+<div id="reportSection" class="section" style="display:none;">
+
+<h1>📊 Reports</h1>
+
+<div class="cards">
+
+<div class="card">
+<h3>Total Workers</h3>
+<p id="reportWorkers">0</p>
+</div>
+
+<div class="card">
+<h3>Total Customers</h3>
+<p id="reportCustomers">0</p>
+</div>
+
+<div class="card">
+<h3>Total Orders</h3>
+<p id="reportOrders">0</p>
+</div>
+
+<div class="card">
+<h3>Total Production</h3>
+<p id="reportProduction">0</p>
+</div>
+
+<div class="card">
+<h3>Total Inventory</h3>
+<p id="reportInventory">0</p>
+</div>
+
+<div class="card">
+<h3>Total Attendance</h3>
+<p id="reportAttendance">0</p>
+</div>
+
+</div>
+
+<div class="card">
+<h2>Sales Report</h2>
+<div id="salesReport"></div>
+</div>
+
+<div class="card">
+<h2>Monthly Sales</h2>
+<div id="monthlySalesReport"></div>
+</div>
+
+<div class="card">
+<h2>Customer Report</h2>
+<div id="customerReport"></div>
+</div>
+
+<div class="card">
+<h2>Worker Report</h2>
+<div id="workerReport"></div>
+</div>
+
+<div class="card">
+<h2>Production Summary</h2>
+<div id="productionSummary"></div>
+</div>
+
+<div class="card">
+<h2>Inventory Summary</h2>
+<div id="inventorySummary"></div>
+</div>
+
+<button onclick="exportReportCSV()">
+Export CSV
+</button>
+
+<button onclick="printReport()">
+Print Report
+</button>
+
+</div>
+
+<!-- ==========================
+INVOICE SECTION
+========================== -->
+
+<div id="invoiceSection" class="section" style="display:none;">
+
+<h1>🧾 GST Invoice</h1>
+
+<div class="card">
+
+<input id="invoiceCustomer" placeholder="Customer">
+
+<input id="invoiceOrder" placeholder="Order No">
+
+<input id="invoiceDesign" placeholder="Design">
+
+<input id="invoiceQty" type="number" placeholder="Qty">
+
+<input id="invoiceRate" type="number" placeholder="Rate">
+
+<button onclick="createInvoice()">
+Create Invoice
+</button>
+
+<input
+id="searchInvoice"
+placeholder="Search Invoice"
+onkeyup="searchInvoice()">
+
+</div>
+
+<div class="card">
+
+<h2>Invoice List</h2>
+
+<div id="invoiceList"></div>
+
+</div>
+
+<div class="card">
+
+<h2>Invoice Preview</h2>
+
+<div id="invoicePreview"></div>
+
+</div>
+
+</div>
+
+<!-- ==========================
+SETTINGS
+========================== -->
+
+<div id="settingsSection"
+class="section"
+style="display:none;">
+
+<h1>⚙ Settings</h1>
+
+<div class="card">
+
+<input
+id="companyName"
+value="VARVIKA CREATION">
+
+<input
+id="gstNumber"
+placeholder="GST Number">
+
+<input
+id="companyMobile"
+placeholder="Mobile Number">
+
+<button onclick="saveSettings()">
+
+Save
+
+</button>
+
+<button onclick="toggleDarkMode()">
+
+Dark Mode
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+<!-- MAIN END -->
+
+</div>
+<!-- ERP END -->
+
+<!-- ==========================
+JAVASCRIPT
+========================== -->
+
+<script src="login.js"></script>
+
+<script src="workers.js"></script>
+
+<script src="attendance.js"></script>
+
+<script src="salary.js"></script>
+
+<!-- તમારા ZIP મુજબ -->
+<script src="costomer.js"></script>
+
+<script src="orders.js"></script>
+
+<script src="production.js"></script>
+
+<script src="inventory.js"></script>
+
+<script src="reports.js"></script>
+
+<script src="invoice.js"></script>
+
+<script src="app-init.js"></script>
+
+<script src="app.js"></script>
+
+</body>
+
+</html>
